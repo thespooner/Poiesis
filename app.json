@@ -4,7 +4,7 @@
     "slug": "poiesis",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Poiesis_Logo.png",
+    "icon": "./assets/Poiesis_Logo_bg.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/Poiesis_Logo_bg.png",
@@ -18,7 +18,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "bundleIdentifier": "no.thespooner.poiesis"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,6 +30,11 @@
     },
     "web": {
       "favicon": "./assets/Poiesis_Logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9de1a24e-5ca2-4390-875c-d00485767ba9"
+      }
     }
   }
 }

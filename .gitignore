@@ -1,5 +1,6 @@
 node_modules/
 .expo/
+certs/
 dist/
 npm-debug.*
 *.jks
@@ -8,6 +9,8 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+eas.json
+credentials.json
 web-build/
 
 # macOS

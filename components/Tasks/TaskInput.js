@@ -18,11 +18,11 @@ function TaskInput({defaultValues, onCancel, onSubmit}) {
             isValid: true,
         },
         startTime: {
-            value: defaultValues ? new Date(defaultValues.startTime) : new Date(),
+            value: defaultValues ? defaultValues.startTime : new Date(),
             isValid: true,
         },
         endTime: {
-            value: defaultValues ? new Date(defaultValues.endTime) : new Date(),
+            value: defaultValues ? defaultValues.endTime : new Date(),
             isValid: true,
         },
         daily: {
