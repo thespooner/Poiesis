@@ -1,7 +1,7 @@
 import {useState} from "react";
-import {View, StyleSheet, Text, Keyboard, Switch} from "react-native";
+import {View, StyleSheet, Text, Keyboard, Switch } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {GlobalStyles} from "../../constants/styles";
-import DateTimePicker from '@react-native-community/datetimepicker';
 import Button from "../UI/Button";
 import Input from "./Input";
 import {TouchableWithoutFeedback} from "react-native-gesture-handler";

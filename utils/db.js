@@ -86,5 +86,5 @@ export const deleteTask = (id) => {
                 }
             );
         });
-    });
+    }).then(r => console.log(r)).catch(e => console.log(e));
 }

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect} from "react";
 import {View, Text, StyleSheet} from "react-native";
 import TasksList from "../components/Tasks/TaskList";
 import {GlobalStyles} from "../constants/styles";
@@ -11,6 +11,37 @@ import {isDevice} from "expo-device";
 import {registerForPushNotificationsAsync} from "../utils/permission";
 
 function DailyTasks() {
+    const tasksCtx = useContext(TasksContext);
+
+    const createNewTask = (oldTask) => {
+        const newStartTime = getTomorrowDaySameTime(oldTask.startTime);
+        const newEndTime = getTomorrowDaySameTime(oldTask.endTime);
+        const newId = uuid();
+
+        return {
+            id: newId,
+            name: oldTask.name,
+            description: oldTask.description,
+            completed: false,
+            startTime: newStartTime,
+            endTime: newEndTime,
+            daily: true,
+        };
+    };
+
+    const scheduleNotification = (task) => {
+        Notifications.scheduleNotificationAsync({
+            identifier: task.id,
+            content: {
+                title: "You have a new task: " + task.name,
+            },
+            trigger: {
+                date: task.startTime,
+                timeZone: 'local',
+            }
+        }).then(r => console.log(r)).catch(e => console.log(e));
+    };
+
     useEffect(() => {
         const register = async () => {
             if (isDevice) {
@@ -18,86 +49,59 @@ function DailyTasks() {
             }
         }
 
-        register().then(r => console.log(r)).catch(e => console.log(e));
+        register();
     }, []);
 
-    const tasksCtx = useContext(TasksContext);
+    useEffect(() => {
+        const fetchAndHandleTasks = () => {
+            const initialTasks = [];
+            const newTasks = [];
+            const toDelete = [];
 
-    // Fetch tasks from database
-    useEffect(async () => {
-        const initialTasks = [];
-        const newTasks = [];
-        const toDelete = [];
-        db.fetchTasks().then((result) => {
-            for (let row = 0; result.rows._array.length > row; row++) {
+            db.fetchTasks().then(result => {
+                if (result.rows._array) {
+                    for (let row = 0; result.rows._array.length > row; row++) {
+                        const taskRow = result.rows._array[row];
+                        const id = taskRow.id;
+                        const startTimeString = taskRow.startTime;
+                        const startTime = new Date(startTimeString);
 
-                const id = result.rows._array[row].id;
-                const startTime = new Date(result.rows._array[row].startTime);
-                const endTime = new Date(result.rows._array[row].endTime);
-                const completed = result.rows._array[row].completed > 0;
-                const daily = result.rows._array[row].daily > 0;
+                        const endTime = new Date(taskRow.endTime);
+                        const completed = taskRow.completed > 0;
+                        const daily = taskRow.daily > 0;
 
-                if (daily && new Date() > endTime) {
-                    // Recreate daily task for the next day
-                    const newStartTime = getTomorrowDaySameTime(startTime);
-                    const newEndTime = getTomorrowDaySameTime(endTime);
-                    const newId = uuid();
-                    newTasks.push({
-                        id: newId,
-                        name: result.rows._array[row].name,
-                        description: result.rows._array[row].description,
-                        completed: false,
-                        startTime: newStartTime,
-                        endTime: newEndTime,
-                        daily: true
-                    });
-                    if (isDevice) {
-                        // Schedule notification for the next day
-                        Notifications.scheduleNotificationAsync({
-                            identifier: newId,
-                            content: {
-                                title: "You have a new task: " + result.rows._array[row].name,
-                            },
-                            trigger: {
-                                date: newStartTime,  // Trigger on newStartTime
-                                timeZone: 'local',  // Ensure the notification is scheduled in local time
+                        const task = {
+                            id: id,
+                            name: taskRow.name,
+                            description: taskRow.description,
+                            completed: completed,
+                            startTime: startTime,
+                            endTime: endTime,
+                            daily: daily,
+                        };
+
+                        if (daily && new Date() > endTime) {
+                            const newTask = createNewTask(task);
+                            newTasks.push(newTask);
+                            if (isDevice) {
+                                scheduleNotification(newTask);
                             }
-                        }).then(r => console.log(r)).catch(e => console.log(e));
+                        }
+
+                        if (getMondayOfWeek(new Date()) > endTime && completed) {
+                            toDelete.push(id);
+                        } else {
+                            initialTasks.push(task);
+                        }
                     }
+                    tasksCtx.setTasks([...initialTasks, ...newTasks]);
+                    toDelete.forEach((id) => tasksCtx.deleteTask(id));
+                    newTasks.forEach((task) => db.insertTask(task).then(r => console.log(r)));
                 }
-
-                // Delete tasks that are completed and recreate daily
-                if (getMondayOfWeek(new Date()) > endTime) {
-                    if (completed) {
-                        toDelete.push(id);
-                    }
-                    continue;
-                }
-
-                initialTasks.push({
-                    id: id,
-                    name: result.rows._array[row].name,
-                    description: result.rows._array[row].description,
-                    completed: completed,
-                    startTime: startTime,
-                    endTime: endTime,
-                    daily: daily,
-                });
-            }
-            tasksCtx.setTasks([...initialTasks, ...newTasks]);
-
-
-            // After setting tasks, delete tasks that need to be deleted
-            toDelete.forEach((id) => {
-                tasksCtx.deleteTask(id);
             });
+        }
 
-            // After setting tasks, insert new tasks to database
-            newTasks.forEach((task) => {
-                db.insertTask(task).then(r => console.log(r));
-            });
-
-        });
+        fetchAndHandleTasks();
     }, []);
 
     const tasks = tasksCtx.tasks.filter(t => onSameDay(t.startTime, new Date()));
@@ -130,6 +134,5 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 16,
         textAlign: "center",
-
     },
 });

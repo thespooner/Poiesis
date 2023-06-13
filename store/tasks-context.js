@@ -36,9 +36,9 @@ function tasksReducer(state, action) {
                     },
                 }).then(r => console.log(r)).catch(e => console.log(e));
             }
-            return [{id: id, ...action.payload, completed: false}, ...state];
+            return [{id: id, ...action.payload, completed: false}, ...state].sort((a, b) => a.startTime - b.startTime);
         case "SET":
-            return action.payload;
+            return action.payload.sort((a, b) => a.startTime - b.startTime);
         case "UPDATE":
             const updatableTaskIndex = state.findIndex(
                 (task) => task.id === action.payload.id
@@ -72,7 +72,7 @@ function tasksReducer(state, action) {
             // Update state
             const updatedTasks = [...state];
             updatedTasks[updatableTaskIndex] = updatedTask;
-            return updatedTasks;
+            return updatedTasks.sort((a, b) => a.startTime - b.startTime);
         case "DELETE":
             if (isDevice) {
                 Notifications.cancelScheduledNotificationAsync(action.payload).then(r => console.log(r)).catch(e => console.log(e));
@@ -86,20 +86,16 @@ function tasksReducer(state, action) {
 
 function TasksContextProvider({children}) {
     const [tasksState, dispatch] = useReducer(tasksReducer, []);
-
     function addTask(taskData) {
         dispatch({type: "ADD", payload: taskData});
     }
-
     function setTasks(tasks) {
         dispatch({type: "SET", payload: tasks});
     }
-
     function deleteTask(id) {
 
         dispatch({type: "DELETE", payload: id});
     }
-
     function updateTask(id, taskData) {
 
         dispatch({type: "UPDATE", payload: {id, taskData}});

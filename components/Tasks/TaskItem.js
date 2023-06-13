@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
         padding: 8,
         color: "white",
         fontWeight: "bold",
-        textOverflow: 'ellipsis',
     },
     description: {
         backgroundColor: "white",
