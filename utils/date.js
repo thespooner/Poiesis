@@ -10,12 +10,17 @@ export function getFormattedTime(date) {
   return hours + " : " + minutes;
 }
 
+export function getDayName(date) {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[date.getDay()];
+}
+
 export function getDateMinusDays(date, days) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() - days);
 }
 
-export function getTomorrowDaySameTime(date) {
-    const Tomorrow = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1);
+export function getNextDaySameTime(date) {
+    const Tomorrow = new Date(date.getFullYear(), date.getMonth(),date.getDate() + 1);
     Tomorrow.setHours(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
     return Tomorrow;
 }

@@ -50,7 +50,7 @@ function TaskInput({defaultValues, onCancel, onSubmit}) {
                 return {
                     name: {value: currentInput.name.value, isValid: nameIsValid},
                     description: {value: currentInput.description.value, isValid: descriptionIsValid},
-                    startTime: {value: currentInput.startTime.value, isValid: true},
+                    startTime: {value: currentInput.startTime.value, isValid: endTimeIsValid},
                     endTime: {value: currentInput.endTime.value, isValid: endTimeIsValid},
                     daily: {value: currentInput.daily.value, isValid: true},
                 };
@@ -110,7 +110,6 @@ function TaskInput({defaultValues, onCancel, onSubmit}) {
                     <View style={styles.datePicker}>
                         <DateTimePicker
                             themeVariant="light"
-                            testID="dateTimePicker"
                             value={inputs.startTime.value}
                             mode={'datetime'}
                             is24Hour={true}
@@ -124,7 +123,6 @@ function TaskInput({defaultValues, onCancel, onSubmit}) {
                     <View style={[styles.datePicker, !inputs.endTime.isValid ? styles.invalidDate : '']}>
                         <DateTimePicker
                             themeVariant="light"
-                            testID="dateTimePicker"
                             value={inputs.endTime.value}
                             mode={'datetime'}
                             is24Hour={true}

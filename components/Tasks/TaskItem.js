@@ -6,7 +6,7 @@ import {useNavigation} from "@react-navigation/native";
 
 import {GlobalStyles} from "../../constants/styles";
 import IconButton from "../UI/IconButton";
-import {getDuration, getFormattedDate, getFormattedTime} from "../../utils/date";
+import {getDayName, getDuration, getFormattedDate, getFormattedTime} from "../../utils/date";
 import {useContext, useRef, useState} from "react";
 import {TasksContext} from "../../store/tasks-context";
 
@@ -91,6 +91,7 @@ function TaskItem({id, name, description, completed, startTime, endTime, daily})
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}> {name} </Text>
                         {completed && <IconButton icon={"checkmark"} size={20} color={"lime"}/>}
+                        {!isExpanded && <Text style={styles.title}> {getFormattedTime(startTime)} * {getFormattedTime(endTime)} </Text>}
                     </View>
                     <IconButton icon={isExpanded ? "arrow-up" : "arrow-down"} onPress={toggleExpand} color={"white"}
                                 size={20}/>
@@ -103,6 +104,7 @@ function TaskItem({id, name, description, completed, startTime, endTime, daily})
                         </View>
                         <View style={styles.timeContainer}>
                             <Text style={styles.time}>Date: {getFormattedDate(startTime)} </Text>
+                            <Text style={styles.time}>Day: {getDayName(startTime)} </Text>
                         </View>
                         <View style={styles.timeContainer}>
                             <Text style={styles.time}>Start: {getFormattedTime(startTime)} </Text>
@@ -110,10 +112,9 @@ function TaskItem({id, name, description, completed, startTime, endTime, daily})
                         </View>
                         <View style={styles.timeContainer}>
                             <Text style={styles.time}>Duration: {getDuration(startTime, endTime)} </Text>
+                            <Text style={styles.time}>Daily?: {daily ? "Yes" : "No"} </Text>
                         </View>
-                        <Text style={styles.time}>Daily?: {daily ? "Yes" : "No"} </Text>
                         <View style={styles.iconContainer}>
-
                             <IconButton color={"white"} size={30} icon={"create-outline"}
                                         onPress={taskEditHandler}></IconButton>
                         </View>
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     iconContainer: {
-        alignItems: 'center',
+        alignItems: 'flex-end',
     },
     time: {
         color: "white",

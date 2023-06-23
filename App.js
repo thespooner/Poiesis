@@ -12,10 +12,8 @@ import AllTasks from "./screens/AllTasks";
 import ManageTask from "./screens/ManageTask";
 import DailyTasks from "./screens/DailyTasks";
 import StatisticsTasks from "./screens/StatisticsTasks";
-import SplashScreen from "./screens/SplashScreen";
 
 import {init} from "./utils/db";
-import {useState} from "react";
 import {Image} from "react-native";
 
 const Stack = createNativeStackNavigator();
@@ -89,19 +87,14 @@ function TaskOverview() {
 }
 
 export default function App() {
-    const [isLoading, setIsLoading] = useState(true);
     init()
         .then(() => {
             console.log('Initialized database');
-            setIsLoading(false);
         })
         .catch((err) => {
             console.log('Initializing db failed');
             console.log(err);
         });
-    if (isLoading) {
-        return <SplashScreen/>;
-    }
     return (
         <>
             <GestureHandlerRootView style={{flex: 1}}>

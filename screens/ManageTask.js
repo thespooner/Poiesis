@@ -21,9 +21,11 @@ function ManageTask({route, navigation}) {
   }
 
   const submitHandler = (taskData) => {
+
     if(!taskId) {
       tasksCtx.addTask(taskData);
     }else {
+      console.log(taskId);
       tasksCtx.updateTask(taskId, taskData);
     }
     navigation.goBack();

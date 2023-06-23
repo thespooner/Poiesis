@@ -20,8 +20,10 @@ export const init = () => {
 };
 
 export const insertTask = (id, name, description, completed, startTime, endTime, daily) => {
-    startTime = new Date(startTime);
-    endTime = new Date(endTime);
+    if(!name || !description) {
+        return Promise.reject(new Error("Name or description cannot be empty!"));
+    }
+
     return new Promise((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(
@@ -39,6 +41,10 @@ export const insertTask = (id, name, description, completed, startTime, endTime,
 };
 
 export const updateTask = (id, name, description, completed, startTime, endTime, daily) => {
+    if(!name || !description) {
+        return Promise.reject(new Error("Name or description cannot be empty!"));
+    }
+
     return new Promise((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(
@@ -73,6 +79,9 @@ export const fetchTasks = () => {
 };
 
 export const deleteTask = (id) => {
+    if(!id) {
+        return Promise.reject(new Error("ID cannot be empty!"));
+    }
     return new Promise((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(

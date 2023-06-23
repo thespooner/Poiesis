@@ -3,7 +3,7 @@ import {View, Text, StyleSheet} from "react-native";
 import TasksList from "../components/Tasks/TaskList";
 import {GlobalStyles} from "../constants/styles";
 import {TasksContext} from "../store/tasks-context";
-import {getMondayOfWeek, getTomorrowDaySameTime, onSameDay} from "../utils/date";
+import {getMondayOfWeek, getNextDaySameTime, onSameDay} from "../utils/date";
 import * as Notifications from 'expo-notifications';
 import * as db from "../utils/db";
 import uuid from "../utils/uuid";
@@ -13,9 +13,9 @@ import {registerForPushNotificationsAsync} from "../utils/permission";
 function DailyTasks() {
     const tasksCtx = useContext(TasksContext);
 
-    const createNewTask = (oldTask) => {
-        const newStartTime = getTomorrowDaySameTime(oldTask.startTime);
-        const newEndTime = getTomorrowDaySameTime(oldTask.endTime);
+    const createNewDailyTask = (oldTask) => {
+        const newStartTime = getNextDaySameTime(oldTask.startTime);
+        const newEndTime = getNextDaySameTime(oldTask.endTime);
         const newId = uuid();
 
         return {
@@ -63,10 +63,9 @@ function DailyTasks() {
                     for (let row = 0; result.rows._array.length > row; row++) {
                         const taskRow = result.rows._array[row];
                         const id = taskRow.id;
-                        const startTimeString = taskRow.startTime;
-                        const startTime = new Date(startTimeString);
-
+                        const startTime = new Date(taskRow.startTime);
                         const endTime = new Date(taskRow.endTime);
+                        console.log(startTime, endTime);
                         const completed = taskRow.completed > 0;
                         const daily = taskRow.daily > 0;
 
@@ -81,10 +80,10 @@ function DailyTasks() {
                         };
 
                         if (daily && new Date() > endTime) {
-                            const newTask = createNewTask(task);
-                            newTasks.push(newTask);
-                            if (isDevice) {
-                                scheduleNotification(newTask);
+                            let newTask = task;
+                            while (new Date() > newTask.endTime) {
+                                newTask = createNewDailyTask(newTask);
+                                newTasks.push(newTask);
                             }
                         }
 
@@ -94,13 +93,29 @@ function DailyTasks() {
                             initialTasks.push(task);
                         }
                     }
+
+                     newTasks.filter( n =>
+                        !initialTasks.some(i =>
+                            i.name === n.name &&
+                            i.description === n.description &&
+                            i.startTime.toISOString() === n.startTime.toISOString() &&
+                            i.endTime.toISOString() === n.endTime.toISOString() &&
+                            i.completed === n.completed &&
+                            i.daily === n.daily
+                        ));
+
+                    newTasks.forEach((task) => {
+                        if (isDevice && task.startTime > new Date()) {
+                            scheduleNotification(task);
+                        }
+                    });
+
                     tasksCtx.setTasks([...initialTasks, ...newTasks]);
                     toDelete.forEach((id) => tasksCtx.deleteTask(id));
                     newTasks.forEach((task) => db.insertTask(task).then(r => console.log(r)));
                 }
             });
         }
-
         fetchAndHandleTasks();
     }, []);
 
