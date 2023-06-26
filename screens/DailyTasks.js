@@ -65,7 +65,6 @@ function DailyTasks() {
                         const id = taskRow.id;
                         const startTime = new Date(taskRow.startTime);
                         const endTime = new Date(taskRow.endTime);
-                        console.log(startTime, endTime);
                         const completed = taskRow.completed > 0;
                         const daily = taskRow.daily > 0;
 
@@ -79,7 +78,7 @@ function DailyTasks() {
                             daily: daily,
                         };
 
-                        if (daily && new Date() > endTime) {
+                        if (completed && daily && new Date() > endTime) {
                             let newTask = task;
                             while (new Date() > newTask.endTime) {
                                 newTask = createNewDailyTask(newTask);

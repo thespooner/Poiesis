@@ -25,7 +25,6 @@ function ManageTask({route, navigation}) {
     if(!taskId) {
       tasksCtx.addTask(taskData);
     }else {
-      console.log(taskId);
       tasksCtx.updateTask(taskId, taskData);
     }
     navigation.goBack();

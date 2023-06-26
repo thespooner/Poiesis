@@ -26,29 +26,29 @@ export function getNextDaySameTime(date) {
 }
 
 export function getMondayOfWeek(date) {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    const newDate = new Date(date.setDate(diff));
-
-    // Ensure the newDate is a Monday.
-    if(newDate.getDay() !== 1) {
-        newDate.setDate(newDate.getDate() + 1);
-    }
+    let newDate = new Date(date);
+    const day = newDate.getDay();
+    const diff = newDate.getDate() - day + (day === 0 ? -6 : 1); // to handle Sunday
+    newDate.setDate(diff);
 
     // Reset time to 00:00.
     newDate.setHours(0, 0, 0, 0);
 
     return newDate;
 }
+
 export function getSundayOfWeek(date) {
-    const day = date.getDay();
+    let newDate = new Date(date);
+    const day = newDate.getDay();
     const diff = 7 - day;
-    const newDate = new Date(date.setDate(date.getDate() + diff));
+    newDate.setDate(newDate.getDate() + diff);
+
     // Reset time to 23:59:59:99.
     newDate.setHours(23, 59, 59, 99);
 
     return newDate;
 }
+
 
 export function getDuration(startTime, endTime) {
     const diff = endTime.getTime() - startTime.getTime();
