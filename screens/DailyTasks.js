@@ -78,7 +78,7 @@ function DailyTasks() {
                             daily: daily,
                         };
 
-                        if (completed && daily && new Date() > endTime) {
+                        if (daily && new Date() > endTime && 24 >= Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60))) {
                             let newTask = task;
                             while (new Date() > newTask.endTime) {
                                 newTask = createNewDailyTask(newTask);
@@ -93,32 +93,36 @@ function DailyTasks() {
                         }
                     }
 
-                     newTasks.filter( n =>
+
+                    const filteredTasks = newTasks.filter(n =>
                         !initialTasks.some(i =>
                             i.name === n.name &&
                             i.description === n.description &&
                             i.startTime.toISOString() === n.startTime.toISOString() &&
-                            i.endTime.toISOString() === n.endTime.toISOString() &&
-                            i.completed === n.completed &&
-                            i.daily === n.daily
+                            i.endTime.toISOString() === n.endTime.toISOString()
                         ));
 
-                    newTasks.forEach((task) => {
+
+                    filteredTasks.forEach((task) => {
                         if (isDevice && task.startTime > new Date()) {
                             scheduleNotification(task);
                         }
                     });
-
-                    tasksCtx.setTasks([...initialTasks, ...newTasks]);
+                    filteredTasks.forEach((t) => {
+                        db.insertTask(t.id, t.name, t.description, t.completed, t.startTime, t.endTime, t.daily).then(r => console.log(r));
+                    });
+                    tasksCtx.setTasks([...initialTasks, ...filteredTasks]);
                     toDelete.forEach((id) => tasksCtx.deleteTask(id));
-                    newTasks.forEach((task) => db.insertTask(task).then(r => console.log(r)));
+
                 }
             });
         }
         fetchAndHandleTasks();
     }, []);
 
+
     const tasks = tasksCtx.tasks.filter(t => onSameDay(t.startTime, new Date()));
+
     if (tasks.length > 0) {
         return (
             <View style={styles.container}>
@@ -129,6 +133,7 @@ function DailyTasks() {
             <Text style={styles.infoText}>No tasks for today</Text>
         </View>);
     }
+
 }
 
 export default DailyTasks;

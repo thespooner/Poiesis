@@ -14,7 +14,8 @@ import DailyTasks from "./screens/DailyTasks";
 import StatisticsTasks from "./screens/StatisticsTasks";
 
 import {init} from "./utils/db";
-import {Image} from "react-native";
+import {Image, Pressable} from "react-native";
+import SplashScreen from "./screens/SplashScreen";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -34,16 +35,16 @@ function TaskOverview() {
                             icon="add"
                             size={26}
                             color={tintColor}
-                            onPress={() => {
-                                navigation.navigate("ManageTask");
-                            }}
+                            onPress={() => navigation.navigate("ManageTask")}
                         />
                     );
                 },
                 headerLeft: () => {
                     return (
-                        <Image style={{width: 30, height: 30, marginLeft: 16}}
-                               source={require('./assets/Poiesis_Logo_bg.png')}/>
+                        <Pressable onPress={ () => navigation.navigate("SplashScreen")}>
+                            <Image style={{width: 30, height: 30, marginLeft: 16}}
+                                   source={require('./assets/Poiesis_Logo_bg.png')}/>
+                        </Pressable>
                     );
                 }
             })}
@@ -119,6 +120,11 @@ export default function App() {
                                 options={{
                                     presentation: "modal",
                                 }}
+                            />
+                            <Stack.Screen
+                                name = "SplashScreen"
+                                component = {SplashScreen}
+                                options = {{headerShown: false}}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>
