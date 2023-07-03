@@ -82,7 +82,15 @@ function DailyTasks() {
                             let newTask = task;
                             while (new Date() > newTask.endTime) {
                                 newTask = createNewDailyTask(newTask);
-                                newTasks.push(newTask);
+                                if(!newTasks.some(t =>
+                                    t.id === newTask.id
+                                    && t.name === newTask.name
+                                    && t.description === newTask.description
+                                    && t.startTime.toISOString() === newTask.startTime.toISOString()
+                                    && t.endTime.toISOString() === newTask.endTime.toISOString())){
+                                    newTasks.push(newTask);
+                                }
+
                             }
                         }
 
