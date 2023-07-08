@@ -83,8 +83,7 @@ function DailyTasks() {
                             while (new Date() > newTask.endTime) {
                                 newTask = createNewDailyTask(newTask);
                                 if(!newTasks.some(t =>
-                                    t.id === newTask.id
-                                    && t.name === newTask.name
+                                    t.name === newTask.name
                                     && t.description === newTask.description
                                     && t.startTime.toISOString() === newTask.startTime.toISOString()
                                     && t.endTime.toISOString() === newTask.endTime.toISOString())){
@@ -125,7 +124,25 @@ function DailyTasks() {
                 }
             });
         }
+        const runAtMidnight = () => {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const timeToMidnight = tomorrow - now;
+            setTimeout(fetchAndHandleTasks, timeToMidnight);
+        }
+
+        // Run immediately on component mount
         fetchAndHandleTasks();
+
+        // Then schedule to run at next midnight
+        runAtMidnight();
+
+        // Set the interval to run every day at midnight
+        const intervalId = setInterval(runAtMidnight, 24 * 60 * 60 * 1000);
+
+        // Clear interval on component unmount
+        return () => clearInterval(intervalId);
+
     }, []);
 
 
