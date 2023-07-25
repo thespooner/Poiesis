@@ -3,7 +3,7 @@ import {View, Text, StyleSheet} from "react-native";
 import TasksList from "../components/Tasks/TaskList";
 import {GlobalStyles} from "../constants/styles";
 import {TasksContext} from "../store/tasks-context";
-import {getMondayOfWeek, getNextDaySameTime, onSameDay} from "../utils/date";
+import {getDateMinusDays, getMondayOfWeek, getNextDaySameTime, onSameDay} from "../utils/date";
 import * as Notifications from 'expo-notifications';
 import * as db from "../utils/db";
 import uuid from "../utils/uuid";
@@ -93,7 +93,7 @@ function DailyTasks() {
                             }
                         }
 
-                        if (getMondayOfWeek(new Date()) > endTime && completed) {
+                        if (getDateMinusDays(new Date(), 2) > endTime && daily) {
                             toDelete.push(id);
                         } else {
                             initialTasks.push(task);

@@ -30,9 +30,6 @@ function TaskStatistics() {
                 <Text style={styles.textTitle}>Week Number: {WeekNumber()}</Text>
                 <Text style={styles.text}>Number of tasks completed: {numWeeklyTasksCompleted}</Text>
                 <Text style={styles.text}>Number of tasks pending: {numWeeklyTasksPending}</Text>
-                <Text style={styles.textTitle}>Total Statistics:</Text>
-                <Text style={styles.text}>Number of tasks completed: {numTasksCompleted}</Text>
-                <Text style={styles.text}>Number of tasks pending: {numTasksPending}</Text>
             </View>
         </View>);
 }

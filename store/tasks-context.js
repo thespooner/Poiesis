@@ -1,4 +1,4 @@
-import {createContext, useEffect, useReducer, useState} from "react";
+import {createContext, useReducer} from "react";
 import uuid from "../utils/uuid";
 import * as db from "../utils/db";
 import * as Notifications from 'expo-notifications';
@@ -36,9 +36,9 @@ function tasksReducer(state, action) {
                     },
                 }).then(r => console.log(r)).catch(e => console.log(e));
             }
-            return [{id: id, ...action.payload, completed: false}, ...state].sort((a, b) => a.startTime - b.startTime);
+            return [{id: id, ...action.payload, completed: false}, ...state].sort((a, b) => b.startTime - a.startTime);
         case "SET":
-            return action.payload.sort((a, b) => a.startTime - b.startTime);
+            return action.payload.sort((a, b) => b.startTime - a.startTime);
         case "UPDATE":
             const updatableTaskIndex = state.findIndex(
                 (task) => task.id === action.payload.id
@@ -72,7 +72,7 @@ function tasksReducer(state, action) {
             // Update state
             const updatedTasks = [...state];
             updatedTasks[updatableTaskIndex] = updatedTask;
-            return updatedTasks.sort((a, b) => a.startTime - b.startTime);
+            return updatedTasks.sort((a, b) => b.startTime - a.startTime);
         case "DELETE":
             if (isDevice) {
                 Notifications.cancelScheduledNotificationAsync(action.payload).then(r => console.log(r)).catch(e => console.log(e));
